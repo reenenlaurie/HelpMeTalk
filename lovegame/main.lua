@@ -35,16 +35,18 @@ function love.load()
 
     -- adding the grid positions
     col = 0
+	row = 0
     i = 1
-    for key,v in pairs(words) do
+	for key,v in pairs(words) do
     	-- assign locations to each words
     	words[key]["left"] = col
-
-    	-- this is buggy, we need a more sturdy formula....
-    	words[key]["top"] = math.floor(math.sqrt(i))-1
-    	col = col + 1
+    	words[key]["top"] = row
+		col = col + 1
     	i = i + 1
-    	if col >= columns then col = 0 end
+    	if col >= columns then 
+			col = 0
+			row = row + 1
+		end
     end
 end
 
