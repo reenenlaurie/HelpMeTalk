@@ -1,3 +1,4 @@
+---- Main Love Functions ----
 function love.load()
 	local lfs = love.filesystem
 	filesTable = lfs.getDirectoryItems("words")
@@ -37,7 +38,8 @@ function love.load()
     col = 0
 	row = 0
     i = 1
-	for key,v in pairs(words) do
+	-- for key,v in pairs(words) do
+	for key,v in pairsByKeys(words) do
     	-- assign locations to each words
     	words[key]["left"] = col
     	words[key]["top"] = row
@@ -58,7 +60,7 @@ function love.draw()
 
 	r = 0
 	c = 0
-	for key,v in pairs(words) do
+	for key,v in pairsByKeys(words) do
     	--lg.draw(v["image"], r*rowheight, c*colwidth)
     	w = words[key]["image"]:getWidth()
     	h = words[key]["image"]:getHeight()
@@ -89,14 +91,6 @@ function love.draw()
     end
 end
 
-function string:split(sep) 
-	-- CalinLeafshade on IRC wrote this
-	local sep, fields = sep or ":", {} 
-	local pattern = string.format("([^%s]+)", sep) 
-	self:gsub(pattern, function(c) fields[#fields+1] = c end) 
-	return fields 
-end 
-
 function love.mousepressed(x, y, button)
 	testx = math.floor(x / colwidth)
 	testy = math.floor(y / rowheight)
@@ -108,6 +102,31 @@ function love.mousepressed(x, y, button)
 		print("Word: " .. key .. "   Top: " ..words[key]["top"])
 		if testx == words[key]["left"] and testy == words[key]["top"] then
 			love.audio.play(words[key]["snd"])
+			print("Clicked word " .. key)
 		end
 	end
 end
+
+----  Helper functions  ----
+function pairsByKeys (t, f)
+	--- From http://www.lua.org/pil/19.3.html .. I believe official lua docs
+	local a = {}
+	for n in pairs(t) do table.insert(a, n) end
+	table.sort(a, f)
+	local i = 0      -- iterator variable
+	local iter = function ()   -- iterator function
+		i = i + 1
+		if a[i] == nil then return nil
+		else return a[i], t[a[i]]
+		end
+	end
+	return iter
+end
+
+function string:split(sep) 
+	-- CalinLeafshade on IRC wrote this
+	local sep, fields = sep or ":", {} 
+	local pattern = string.format("([^%s]+)", sep) 
+	self:gsub(pattern, function(c) fields[#fields+1] = c end) 
+	return fields 
+end 
