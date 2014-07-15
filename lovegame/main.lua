@@ -1,3 +1,5 @@
+local rich = require 'richtext'
+
 ---- Main Love Functions ----
 function love.load()
 	local lfs = love.filesystem
@@ -52,7 +54,8 @@ function love.load()
 		end
 	end
 	columns = math.floor(rows*1.3+0.5) + coladd
-   
+	
+	mainFont = love.graphics.newFont(50-rows*5)
 
 	-- adding the grid positions
 	col = 0
@@ -103,10 +106,19 @@ function love.draw()
 			xoffset = colwidth/2 - w*scale/2
 		end
 
-		
+		-- draw the image
 		lg.draw(words[key]["image"],c*colwidth+xoffset,r*rowheight+yoffset,0,scale,scale)
+		
+		-- draw text over the folder image
 		if words[key]["image"] == folderImg then
-			lg.print(key,c*colwidth-xoffset/2,r*rowheight-yoffset/2)
+			lg.setFont(mainFont)
+			local x = c*colwidth+colwidth/2-mainFont:getWidth(key)/2
+			local y = r*rowheight+rowheight/2-mainFont:getHeight(key)/2
+			local textwidth = mainFont:getWidth(key)/2
+			local toptext = rich.new{"{white}".. key,textwidth,white={255,255,255}}
+			local bottext = rich.new{"{black}".. key,textwidth,black={0,0,0}}
+			bottext:draw(x+2,y+2)
+			toptext:draw(x,y)
 		end
 		--lg.draw(words[key]["image"],c*colwidth,r*rowheight)
 		if c >= columns-1 then 
@@ -127,7 +139,7 @@ function love.mousepressed(x, y, button)
 		print("Word: " .. key .. "	 Left: " ..words[key]["left"])
 		print("Word: " .. key .. "	 Top: " ..words[key]["top"])
 		if testx == words[key]["left"] and testy == words[key]["top"] then
-			love.audio.play(words[key]["snd"])
+			if words[key]["snd"] then love.audio.play(words[key]["snd"]) end
 			print("Clicked word " .. key)
 		end
 	end
