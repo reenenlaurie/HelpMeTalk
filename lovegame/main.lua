@@ -1,7 +1,7 @@
 local rich = require 'richtext'
 
 ---- Main Love Functions ----
-function love.load()
+function love.focus()
 	printed = {}
 	local lfs = love.filesystem
 	--filesTable = lfs.getDirectoryItems("words")
@@ -90,6 +90,13 @@ function love.load()
 					row = row + 1
 				end
 			end
+			if words[key]["image"]==folderImg then
+				mainFont = folders[words[key]["folder"]]["font"]
+				local textwidth = mainFont:getWidth(key)/2
+				akey = firstToUpper(key)
+				words[key]["toptext"] = rich.new{"{size}{white}".. akey,textwidth,white={255,255,255},size=mainFont}
+				words[key]["bottext"]  = rich.new{"{size}{black}".. akey,textwidth,black={0,0,0},size=mainFont}
+			end
 		end
 	end
 end
@@ -136,11 +143,9 @@ function love.draw()
 				mainFont = folders[activepath]["font"]
 				local x = c*colwidth+colwidth/2-mainFont:getWidth(key)/2
 				local y = r*rowheight+rowheight/2-mainFont:getHeight(key)/2
-				local textwidth = mainFont:getWidth(key)/2
-				local toptext = rich.new{"{white}".. key,textwidth,white={255,255,255}}
-				local bottext = rich.new{"{black}".. key,textwidth,black={0,0,0}}
-				bottext:draw(x+2,y+2)
-				toptext:draw(x,y)
+				
+				words[key]["bottext"]:draw(x+2,y+2)
+				words[key]["toptext"]:draw(x,y)
 			end
 			--lg.draw(words[key]["image"],c*colwidth,r*rowheight)
 			if c >= columns -1 then 
@@ -236,4 +241,8 @@ end
 function splitfilename(strfilename)
 	-- Returns the Path, Filename, and Extension as 3 values
 	return string.match(strfilename:lower(),"(.-)([^\\/]-%.?([^%.\\/]*))$")
+end
+
+function firstToUpper(str)
+    return (str:gsub("^%l", string.upper))
 end
