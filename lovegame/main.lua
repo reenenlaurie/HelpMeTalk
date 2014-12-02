@@ -1,5 +1,9 @@
 local rich = require 'richtext'
 
+function love.load()
+	love.focus()	
+end
+
 ---- Main Love Functions ----
 function love.focus()
 	printed = {}
